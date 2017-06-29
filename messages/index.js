@@ -55,8 +55,36 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
         });
   });
 
+   intents.matches(/search /i, function (session, args) {
+    session.sendTyping(); 
+    var input = args.matched.input
+    var GoogleSearch = require('google-search');
+    var googleSearch = new GoogleSearch({
+    key: 'AIzaSyDpYiVTNJIYW9ZuYwbXoSbicjYazDJO3Xs',
+    cx: '000397035475459010136:pjvn0287nfk'
+});
+ 
+ 
+googleSearch.build({
+  q: input,
+  start: 5,
+  //gl: "tr", //geolocation, 
+  //lr: "lang_tr",
+  num: 10, // Number of search results to return between 1 and 10, inclusive 
+  //siteSearch: "https://www.techolution.com" // Restricts results to URLs from a specified site 
+}, function(error, response) {
+  //console.log(response);
+ var results = response.items;
+ var linkArr = [];
+ results.forEach(function(value){
+  linkArr.push(value.link);
+});
+    session.send("Here are top 10 search results for you ....."+ "\n"+JSON.stringify(linkArr).replace('[','').replace(']','').replace(/,/g, '\n'));
+});
+  });
+
   intents.onDefault(function (session, args, next) {
-      session.send("I'm sorry "+session.dialogData.name+". I didn't understand.");
+      session.send("I'm sorry . I didn't understand.");
   });
 
 if (useEmulator) {
